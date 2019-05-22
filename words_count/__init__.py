@@ -1,14 +1,14 @@
 import sys
 from words_count.words_count_core import WordsCount
-from words_count.repository_worker import Repository, RepositoryException
 from words_count.report_maker import ReportMaker, CsvReportMaker, JsonReportMaker, ScreenReportMaker
+from words_count import repository_worker
 
 def parse_args(args):
     outs = []
-    if "-json" in args:
-        outs.append("-json")
-    if "-csv" in args:
-        outs.append("-csv")
+    if "--json" in args:
+        outs.append("--json")
+    if "--csv" in args:
+        outs.append("--csv")
     if (len(outs) > 1):
         return ["Параметры {0} не могут использоваться вместе.".format(", ".join(outs))]
 
@@ -22,7 +22,7 @@ def parse_args(args):
 
     i = 1
     while i < len(args):
-        if args[i] == "-repo":
+        if args[i] == "--repo":
             if i < len(args) - 1:
                 i += 1
                 repo_url = args[i]
@@ -30,7 +30,7 @@ def parse_args(args):
                 return ["Пропущен параметр: путь к репозиторию."]
             continue
 
-        if args[i] == "-local":
+        if args[i] == "--local":
             if i < len(args) - 1:
                 i += 1
                 local_path = args[i]
@@ -38,7 +38,7 @@ def parse_args(args):
                 return ["Пропущен параметр: локальный путь для клонирования репозитория."]
             continue
 
-        if args[i] == "-pos":
+        if args[i] == "--pos":
             if i < len(args) - 1:
                 i += 1
                 pos = args[i]
@@ -46,7 +46,7 @@ def parse_args(args):
                 return ["Пропущен параметр: часть речи."]
             continue
 
-        if args[i] == "-nametype":
+        if args[i] == "--nametype":
             if i < len(args) - 1:
                 i += 1
                 name_type = args[i]
@@ -54,7 +54,7 @@ def parse_args(args):
                 return ["Пропущен параметр: часть речи."]
             continue
 
-        if args[i] == "-json":
+        if args[i] == "--json":
             if i < len(args) - 1:
                 i += 1
                 out_file = args[i]
@@ -63,7 +63,7 @@ def parse_args(args):
                 return ["Пропущен параметр: путь к формируемому файлу JSON."]
             continue
 
-        if args[i] == "-csv":
+        if args[i] == "--csv":
             if i < len(args) - 1:
                 i += 1
                 out_file = args[i]
@@ -88,8 +88,8 @@ def main():
     repo_url, local_path, pos, name_type, language, out_type, out_file = args
 
     try:
-        Repository.clone(repo_url, local_path)
-    except RepositoryException as e:
+        repository_worker.clone(repo_url, local_path)
+    except repository_worker.RepositoryException as e:
         print("Ошибка: " + str(e))
         return 1
 
